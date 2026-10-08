@@ -3,70 +3,200 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>إنشاء حساب</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial;
-      background: #f3f3f3;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
 
-    .box {
+    .container {
+      width: 90%;
+      max-width: 400px;
       background: white;
-      width: 350px;
-      padding: 25px;
+      padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 5px 20px #ccc;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
     }
 
     h2 {
       text-align: center;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
     }
 
     input {
       width: 100%;
-      padding: 12px;
-      margin: 7px 0 15px;
-      box-sizing: border-box;
+      padding: 13px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
     }
 
     button {
       width: 100%;
-      padding: 12px;
+      padding: 13px;
+      border: none;
+      border-radius: 8px;
       background: #222;
       color: white;
-      border: 0;
-      border-radius: 7px;
+      font-size: 16px;
       cursor: pointer;
+    }
+
+    button:hover {
+      background: #444;
+    }
+
+    #verification {
+      display: none;
+    }
+
+    .message {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #555;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="box">
-    <h2>إنشاء حساب</h2>
+  <div class="container">
 
-    <form>
-      <label>الاسم</label>
-      <input type="text" required>
+    <!-- صفحة التسجيل -->
+    <div id="signup">
 
-      <label>رقم التلفون</label>
-      <input type="tel" required>
+      <h2>إنشاء حساب</h2>
 
-      <label>إنشاء كلمة مرور</label>
-      <input type="password" required>
+      <form id="signupForm">
 
-      <label>تأكيد كلمة المرور</label>
-      <input type="password" required>
+        <label>الاسم</label>
+        <input
+          type="text"
+          id="name"
+          required
+        >
 
-      <button type="submit">إرسال</button>
-    </form>
+        <label>رقم التلفون</label>
+        <input
+          type="tel"
+          id="phone"
+          required
+        >
+
+        <label>إنشاء كلمة مرور</label>
+        <input
+          type="password"
+          id="password"
+          required
+        >
+
+        <label>تأكيد كلمة المرور</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          required
+        >
+
+        <button type="submit">
+          إرسال
+        </button>
+
+      </form>
+
+    </div>
+
+
+    <!-- صفحة كود التحقق -->
+    <div id="verification">
+
+      <h2>تأكيد رقم الهاتف</h2>
+
+      <p class="message">
+        أدخل كود التحقق المرسل إلى رقم هاتفك
+      </p>
+
+      <input
+        type="text"
+        id="verificationCode"
+        placeholder="أدخل كود التحقق"
+        maxlength="6"
+        inputmode="numeric"
+      >
+
+      <button type="button" id="verifyButton">
+        تأكيد
+      </button>
+
+    </div>
+
   </div>
+
+
+  <script>
+
+    const signupForm = document.getElementById("signupForm");
+    const signup = document.getElementById("signup");
+    const verification = document.getElementById("verification");
+
+    signupForm.addEventListener("submit", function(event) {
+
+      event.preventDefault();
+
+      const password =
+        document.getElementById("password").value;
+
+      const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+      if (password !== confirmPassword) {
+        alert("كلمتا المرور غير متطابقتين");
+        return;
+      }
+
+      // إخفاء نموذج التسجيل
+      signup.style.display = "none";
+
+      // إظهار صفحة التحقق
+      verification.style.display = "block";
+
+    });
+
+
+    document.getElementById("verifyButton")
+      .addEventListener("click", function() {
+
+        const code =
+          document.getElementById("verificationCode").value;
+
+        if (code.length < 4) {
+          alert("أدخل كود التحقق الصحيح");
+          return;
+        }
+
+        alert("تم تأكيد الرقم بنجاح");
+
+      });
+
+  </script>
 
 </body>
 </html>
