@@ -96,7 +96,6 @@
       <form id="signupForm">
 
         <label>الاسم</label>
-
         <input
           type="text"
           id="name"
@@ -105,7 +104,6 @@
         >
 
         <label>رقم التلفون</label>
-
         <input
           type="tel"
           id="phone"
@@ -150,10 +148,7 @@
 
   <script>
 
-    // ==========================
-    // Supabase
-    // ==========================
-
+    // بيانات Supabase
     const SUPABASE_URL =
       "https://ptzrolgwxprxviqxokkg.supabase.co";
 
@@ -161,10 +156,7 @@
       "sb_publishable_t1RZwQ8y6lvw225QdygQ8g_vBgSvndg";
 
 
-    // ==========================
     // عناصر الصفحة
-    // ==========================
-
     const signup =
       document.getElementById("signup");
 
@@ -184,14 +176,12 @@
       document.getElementById("message");
 
 
+    // تخزين البيانات مؤقتًا في الصفحة
     let originalName = "";
     let originalPhone = "";
 
 
-    // ==========================
-    // الانتقال للصفحة الثانية
-    // ==========================
-
+    // عند الضغط على متابعة
     form.addEventListener("submit", function(event) {
 
       event.preventDefault();
@@ -203,121 +193,144 @@
         document.getElementById("phone").value.trim();
 
 
-      if (originalName === "" || originalPhone === "") {
+      if (
+        originalName === "" ||
+        originalPhone === ""
+      ) {
         return;
       }
 
 
+      // إخفاء الصفحة الأولى
       signup.style.display = "none";
 
+
+      // إظهار الصفحة الثانية
       nameAgain.style.display = "block";
+
 
       secondName.focus();
 
     });
 
 
-    // ==========================
-    // الحفظ في قاعدة البيانات
-    // ==========================
+    // عند الضغط على تأكيد
+    saveButton.addEventListener(
+      "click",
+      async function() {
 
-    saveButton.addEventListener("click", async function() {
+        const enteredName =
+          secondName.value.trim();
 
-      const enteredName =
-        secondName.value.trim();
-
-
-      message.textContent = "";
+        message.textContent = "";
 
 
-      if (enteredName === "") {
+        // التأكد أن الاسم مكتوب
+        if (enteredName === "") {
 
-        message.textContent = "اكتب الاسم";
+          message.textContent =
+            "اكتب الاسم";
 
-        message.className = "message error";
+          message.className =
+            "message error";
 
-        return;
-      }
-
-
-      if (enteredName !== originalName) {
-
-        message.textContent = "الاسم غير مطابق";
-
-        message.className = "message error";
-
-        return;
-      }
-
-
-      saveButton.disabled = true;
-
-      saveButton.textContent = "جاري الحفظ...";
-
-
-      try {
-
-        const response = await fetch(
-          SUPABASE_URL + "/rest/v1/users",
-          {
-            method: "POST",
-
-            headers: {
-              "apikey": SUPABASE_KEY,
-              "Authorization": "Bearer " + SUPABASE_KEY,
-              "Content-Type": "application/json",
-              "Prefer": "return=minimal"
-            },
-
-            body: JSON.stringify({
-              name: originalName,
-              phone: originalPhone
-            })
-          }
-        );
-
-
-        if (!response.ok) {
-
-          const errorText =
-            await response.text();
-
-          console.error(
-            "Supabase error:",
-            errorText
-          );
-
-          throw new Error(errorText);
+          return;
         }
 
 
-        message.textContent =
-          "تم التسجيل بنجاح ✓";
+        // التأكد أن الاسم مطابق
+        if (enteredName !== originalName) {
 
-        message.className =
-          "message success";
+          message.textContent =
+            "الاسم غير مطابق";
 
-        saveButton.textContent =
-          "تم الحفظ";
+          message.className =
+            "message error";
+
+          return;
+        }
 
 
-      } catch (error) {
-
-        console.error(error);
-
-        message.textContent =
-          "خطأ: " + error.message;
-
-        message.className =
-          "message error";
-
-        saveButton.disabled = false;
+        // تعطيل الزر أثناء الحفظ
+        saveButton.disabled = true;
 
         saveButton.textContent =
-          "تأكيد";
+          "جاري الحفظ...";
+
+
+        try {
+
+          const response =
+            await fetch(
+              SUPABASE_URL + "/rest/v1/users",
+              {
+                method: "POST",
+
+                headers: {
+                  "apikey": SUPABASE_KEY,
+
+                  "Authorization":
+                    "Bearer " + SUPABASE_KEY,
+
+                  "Content-Type":
+                    "application/json",
+
+                  "Prefer":
+                    "return=minimal"
+                },
+
+                body: JSON.stringify({
+                  name: originalName,
+                  phone: originalPhone
+                })
+              }
+            );
+
+
+          // لو حصل خطأ من Supabase
+          if (!response.ok) {
+
+            const errorText =
+              await response.text();
+
+            console.error(
+              "Supabase error:",
+              errorText
+            );
+
+            throw new Error(errorText);
+          }
+
+
+          // نجاح
+          message.textContent =
+            "تم التسجيل بنجاح ✓";
+
+          message.className =
+            "message success";
+
+          saveButton.textContent =
+            "تم الحفظ";
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          message.textContent =
+            "حدث خطأ أثناء التسجيل";
+
+          message.className =
+            "message error";
+
+          saveButton.disabled = false;
+
+          saveButton.textContent =
+            "تأكيد";
+        }
+
       }
-
-    });
+    );
 
   </script>
 
