@@ -61,7 +61,7 @@
     }
 
     button:disabled {
-      opacity: 0.6;
+      opacity: .6;
     }
 
     #nameAgain {
@@ -71,6 +71,7 @@
     .message {
       text-align: center;
       margin-top: 15px;
+      word-break: break-word;
     }
 
     .success {
@@ -87,6 +88,7 @@
 
   <div class="box">
 
+    <!-- الصفحة الأولى -->
     <div id="signup">
 
       <h2>إنشاء حساب</h2>
@@ -120,6 +122,7 @@
     </div>
 
 
+    <!-- الصفحة الثانية -->
     <div id="nameAgain">
 
       <h2>أدخل الاسم مرة تانية</h2>
@@ -147,12 +150,20 @@
 
   <script>
 
+    // ==========================
+    // Supabase
+    // ==========================
+
     const SUPABASE_URL =
       "https://ptzrolgwxprxviqxokkg.supabase.co";
 
     const SUPABASE_KEY =
       "sb_publishable_t1RZwQ8y6lvw225QdygQ8g_vBgSvndg";
 
+
+    // ==========================
+    // عناصر الصفحة
+    // ==========================
 
     const signup =
       document.getElementById("signup");
@@ -177,15 +188,24 @@
     let originalPhone = "";
 
 
-    form.addEventListener("submit", function(e) {
+    // ==========================
+    // الانتقال للصفحة الثانية
+    // ==========================
 
-      e.preventDefault();
+    form.addEventListener("submit", function(event) {
+
+      event.preventDefault();
 
       originalName =
         document.getElementById("name").value.trim();
 
       originalPhone =
         document.getElementById("phone").value.trim();
+
+
+      if (originalName === "" || originalPhone === "") {
+        return;
+      }
 
 
       signup.style.display = "none";
@@ -197,19 +217,24 @@
     });
 
 
+    // ==========================
+    // الحفظ في قاعدة البيانات
+    // ==========================
+
     saveButton.addEventListener("click", async function() {
 
       const enteredName =
         secondName.value.trim();
 
 
-      if (!enteredName) {
+      message.textContent = "";
 
-        message.textContent =
-          "اكتب الاسم";
 
-        message.className =
-          "message error";
+      if (enteredName === "") {
+
+        message.textContent = "اكتب الاسم";
+
+        message.className = "message error";
 
         return;
       }
@@ -217,11 +242,9 @@
 
       if (enteredName !== originalName) {
 
-        message.textContent =
-          "الاسم غير مطابق";
+        message.textContent = "الاسم غير مطابق";
 
-        message.className =
-          "message error";
+        message.className = "message error";
 
         return;
       }
@@ -229,8 +252,7 @@
 
       saveButton.disabled = true;
 
-      saveButton.textContent =
-        "جاري الحفظ...";
+      saveButton.textContent = "جاري الحفظ...";
 
 
       try {
@@ -242,12 +264,9 @@
 
             headers: {
               "apikey": SUPABASE_KEY,
-              "Authorization":
-                "Bearer " + SUPABASE_KEY,
-              "Content-Type":
-                "application/json",
-              "Prefer":
-                "return=minimal"
+              "Authorization": "Bearer " + SUPABASE_KEY,
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal"
             },
 
             body: JSON.stringify({
@@ -263,9 +282,12 @@
           const errorText =
             await response.text();
 
-          console.log(errorText);
+          console.error(
+            "Supabase error:",
+            errorText
+          );
 
-          throw new Error("Database error");
+          throw new Error(errorText);
         }
 
 
@@ -284,7 +306,7 @@
         console.error(error);
 
         message.textContent =
-          "حصل خطأ أثناء الحفظ";
+          "خطأ: " + error.message;
 
         message.className =
           "message error";
